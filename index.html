@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סודוקו — לומדים ומשחקים</title>
+  <meta name="description" content="לומדים סודוקו מאפס — הסברים ברורים, שלבים פשוטים ותרגול אינטראקטיבי" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="logo" onclick="showSection('home')">
+      <svg aria-label="סודוקו לוגו" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+        <rect width="40" height="40" rx="10" fill="currentColor" class="logo-bg"/>
+        <rect x="5" y="5" width="10" height="10" rx="2" fill="white" opacity="0.9"/>
+        <rect x="17" y="5" width="10" height="10" rx="2" fill="white" opacity="0.4"/>
+        <rect x="5" y="17" width="10" height="10" rx="2" fill="white" opacity="0.4"/>
+        <rect x="17" y="17" width="10" height="10" rx="2" fill="white" opacity="0.9"/>
+        <rect x="29" y="5" width="6" height="6" rx="1.5" fill="white" opacity="0.6"/>
+        <rect x="29" y="13" width="6" height="6" rx="1.5" fill="white" opacity="0.3"/>
+        <rect x="5" y="29" width="6" height="6" rx="1.5" fill="white" opacity="0.3"/>
+        <rect x="13" y="29" width="6" height="6" rx="1.5" fill="white" opacity="0.6"/>
+      </svg>
+      <span class="logo-text">סודוקו</span>
+    </a>
+
+    <nav class="main-nav" role="navigation" aria-label="ניווט ראשי">
+      <button class="nav-btn active" data-section="home" onclick="showSection('home')">🏠 בית</button>
+      <button class="nav-btn" data-section="learn" onclick="showSection('learn')">📖 לימוד</button>
+      <button class="nav-btn" data-section="practice" onclick="showSection('practice')">🎮 תרגול</button>
+    </nav>
+
+    <button class="theme-toggle" data-theme-toggle aria-label="החלף מצב תצוגה">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ===== HOME ===== -->
+<main id="section-home" class="section active">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">למתחילים מוחלטים</div>
+      <h1 class="hero-title">לומדים סודוקו<br /><span class="accent">מאפס, בקלות</span></h1>
+      <p class="hero-sub">סודוקו הוא אחד המשחקי לוגיקה הפופולריים בעולם. ללא מתמטיקה, ללא מזל — רק חשיבה שיטתית. כאן תלמדו הכל מהיסוד.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="showSection('learn')">📖 התחל ללמוד</button>
+        <button class="btn-secondary" onclick="showSection('practice')">🎮 ישר לתרגול</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="mini-board" aria-hidden="true">
+        <div class="mini-cell filled">5</div><div class="mini-cell">3</div><div class="mini-cell filled">4</div>
+        <div class="mini-cell">6</div><div class="mini-cell filled">7</div><div class="mini-cell">8</div>
+        <div class="mini-cell filled">9</div><div class="mini-cell">1</div><div class="mini-cell filled">2</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2 class="section-title">מה תמצאו כאן</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>מה זה סודוקו?</h3>
+        <p>הסבר פשוט וברור על הכללים, המבנה, ומה המטרה של המשחק.</p>
+        <button class="btn-link" onclick="showSection('learn'); showLearnStep(0)">קרא עוד ←</button>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧩</div>
+        <h3>איך פותרים?</h3>
+        <p>שיטות ואסטרטגיות לפתרון שלב אחרי שלב, עם דוגמאות חיות.</p>
+        <button class="btn-link" onclick="showSection('learn'); showLearnStep(2)">קרא עוד ←</button>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>תרגול אינטראקטיבי</h3>
+        <p>שלוש רמות קושי, בדיקת שגיאות בזמן אמת, ורמזים כשצריך.</p>
+        <button class="btn-link" onclick="showSection('practice')">שחק עכשיו ←</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-home">
+    <h2 class="section-title">שאלות נפוצות</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">האם צריך לדעת מתמטיקה? <span class="faq-arrow">▼</span></button>
+        <div class="faq-a">לא! סודוקו לא דורש שום ידע מתמטי. המספרים 1–9 משמשים כסמלים בלבד — אפשר להשתמש גם באותיות או צבעים.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">כמה זמן לוקח ללמוד? <span class="faq-arrow">▼</span></button>
+        <div class="faq-a">תוך 10 דקות תבינו את הכללים. תוך שעה תוכלו לפתור את הרמה הקלה. ומשם — כל אחד בקצב שלו.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">האם יש תשובה אחת נכונה? <span class="faq-arrow">▼</span></button>
+        <div class="faq-a">כן. לכל תשבץ סודוקו תקין יש בדיוק פתרון אחד, ורק הלוגיקה מובילה אליו.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== LEARN ===== -->
+<main id="section-learn" class="section">
+
+  <div class="learn-layout">
+    <aside class="learn-sidebar">
+      <h2 class="sidebar-title">שלבי הלימוד</h2>
+      <nav class="steps-nav" role="navigation" aria-label="שלבי הלימוד">
+        <button class="step-btn active" onclick="showLearnStep(0)" data-step="0">
+          <span class="step-num">1</span>
+          <span class="step-label">מה זה סודוקו?</span>
+        </button>
+        <button class="step-btn" onclick="showLearnStep(1)" data-step="1">
+          <span class="step-num">2</span>
+          <span class="step-label">הכללים</span>
+        </button>
+        <button class="step-btn" onclick="showLearnStep(2)" data-step="2">
+          <span class="step-num">3</span>
+          <span class="step-label">שיטת השמיטה</span>
+        </button>
+        <button class="step-btn" onclick="showLearnStep(3)" data-step="3">
+          <span class="step-num">4</span>
+          <span class="step-label">שיטת המיקום הבלעדי</span>
+        </button>
+        <button class="step-btn" onclick="showLearnStep(4)" data-step="4">
+          <span class="step-num">5</span>
+          <span class="step-label">טיפים ואסטרטגיה</span>
+        </button>
+      </nav>
+      <button class="btn-primary go-practice" onclick="showSection('practice')">🎮 עבור לתרגול</button>
+    </aside>
+
+    <div class="learn-content">
+
+      <!-- Step 0: What is Sudoku -->
+      <article class="learn-step active" data-step="0">
+        <h2>מה זה סודוקו?</h2>
+        <p class="step-intro">סודוקו הוא משחק לוגיקה שמתרחש על לוח 9×9. המטרה פשוטה: למלא כל תא במספר מ-1 עד 9, לפי כללים ברורים.</p>
+
+        <div class="info-box">
+          <div class="info-icon">💡</div>
+          <div>
+            <strong>עובדה מעניינת:</strong> המילה "סודוקו" מגיעה מיפנית ופירושה "מספר בלבד". המשחק פופולרי בכל העולם.
+          </div>
+        </div>
+
+        <h3>מבנה הלוח</h3>
+        <p>הלוח מחולק ל-3 רמות:</p>
+        <ul class="styled-list">
+          <li><strong>81 תאים</strong> — הלוח כולל 9 שורות ו-9 עמודות</li>
+          <li><strong>9 שורות</strong> — כל שורה אופקית</li>
+          <li><strong>9 עמודות</strong> — כל עמודה אנכית</li>
+          <li><strong>9 ריבועים</strong> — תשעה "קוביות" של 3×3 בתוך הלוח הגדול</li>
+        </ul>
+
+        <div class="board-explain">
+          <div class="explain-board">
+            <div class="ex-board-grid" id="explain-board-grid"></div>
+          </div>
+          <div class="explain-legend">
+            <div class="legend-item"><span class="legend-dot row-dot"></span> שורה</div>
+            <div class="legend-item"><span class="legend-dot col-dot"></span> עמודה</div>
+            <div class="legend-item"><span class="legend-dot box-dot"></span> ריבוע 3×3</div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <div></div>
+          <button class="btn-primary" onclick="showLearnStep(1)">הכללים ←</button>
+        </div>
+      </article>
+
+      <!-- Step 1: Rules -->
+      <article class="learn-step" data-step="1">
+        <h2>הכללים הפשוטים</h2>
+        <p class="step-intro">שלושה כללים. לא יותר. וכשתבינו אותם — הכל נופל למקום.</p>
+
+        <div class="rule-cards">
+          <div class="rule-card">
+            <div class="rule-num">כלל 1</div>
+            <h3>בכל שורה</h3>
+            <p>כל שורה אופקית חייבת להכיל את כל המספרים 1–9, כל אחד פעם אחת בלבד.</p>
+            <div class="rule-demo row-demo">
+              <span>3</span><span>1</span><span>4</span><span>1</span><span>5</span><span>9</span><span>2</span><span>6</span><span>?</span>
+            </div>
+            <p class="rule-note">מה המספר החסר? 8 — כי 8 לא מופיע בשורה!</p>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-num">כלל 2</div>
+            <h3>בכל עמודה</h3>
+            <p>כל עמודה אנכית חייבת להכיל את כל המספרים 1–9, כל אחד פעם אחת בלבד.</p>
+            <div class="rule-demo col-demo">
+              <div>7</div><div>2</div><div>5</div><div>3</div><div>8</div><div>1</div><div>4</div><div>6</div><div>?</div>
+            </div>
+            <p class="rule-note">מה החסר? 9!</p>
+          </div>
+
+          <div class="rule-card">
+            <div class="rule-num">כלל 3</div>
+            <h3>בכל ריבוע 3×3</h3>
+            <p>כל אחד מ-9 הריבועים הקטנים חייב להכיל את כל המספרים 1–9.</p>
+            <div class="rule-demo box-demo-grid">
+              <span>2</span><span>7</span><span>1</span>
+              <span>9</span><span>4</span><span>?</span>
+              <span>6</span><span>3</span><span>8</span>
+            </div>
+            <p class="rule-note">החסר הוא 5!</p>
+          </div>
+        </div>
+
+        <div class="info-box success">
+          <div class="info-icon">✅</div>
+          <div>
+            <strong>זה הכל!</strong> שלושה כללים פשוטים. כל תא שתמלאו חייב לעמוד בשלושתם בו-זמנית.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-outline" onclick="showLearnStep(0)">→ חזרה</button>
+          <button class="btn-primary" onclick="showLearnStep(2)">שיטת פתרון ←</button>
+        </div>
+      </article>
+
+      <!-- Step 2: Elimination -->
+      <article class="learn-step" data-step="2">
+        <h2>שיטת השמיטה</h2>
+        <p class="step-intro">השיטה הבסיסית והחזקה ביותר: בדיקה מה <em>לא יכול</em> להיות בתא — עד שנשאר רק תשובה אחת אפשרית.</p>
+
+        <h3>איך זה עובד?</h3>
+        <ol class="numbered-list">
+          <li>בחרו תא ריק.</li>
+          <li>בדקו את השורה שלו — אילו מספרים כבר קיימים? השמיטו אותם.</li>
+          <li>בדקו את העמודה שלו — השמיטו גם את אלה.</li>
+          <li>בדקו את הריבוע 3×3 שלו — השמיטו שוב.</li>
+          <li>אם נשאר מספר אחד בלבד — זוהי התשובה!</li>
+        </ol>
+
+        <div class="example-box">
+          <h4>דוגמה אינטראקטיבית</h4>
+          <p>לחצו על תא ריק כדי לראות את תהליך השמיטה:</p>
+          <div class="elim-demo" id="elim-demo"></div>
+          <div class="elim-info" id="elim-info">
+            <p class="elim-hint">לחצו על אחד מהתאים הריקים (מסומנים)</p>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-outline" onclick="showLearnStep(1)">→ חזרה</button>
+          <button class="btn-primary" onclick="showLearnStep(3)">שיטה הבאה ←</button>
+        </div>
+      </article>
+
+      <!-- Step 3: Sole candidate -->
+      <article class="learn-step" data-step="3">
+        <h2>שיטת המיקום הבלעדי</h2>
+        <p class="step-intro">לפעמים מספר מסוים יכול להיכנס <em>רק למקום אחד</em> בשורה, עמודה, או ריבוע — גם אם יש כמה אפשרויות בתא.</p>
+
+        <h3>הרעיון</h3>
+        <p>במקום לבדוק תא ולשאול "מה יכול להיכנס לכאן?", בדקו ריבוע ושאלו: "המספר X — איפה הוא יכול להיכנס ברריבוע הזה?"</p>
+
+        <div class="sole-demo-box">
+          <h4>דוגמה: איפה יש לשים את 7?</h4>
+          <div class="sole-grid" id="sole-grid"></div>
+          <p id="sole-explanation" class="sole-explanation">לחצו "הצג" כדי לראות את הניתוח</p>
+          <button class="btn-secondary" onclick="runSoleDemo()">הצג ניתוח</button>
+        </div>
+
+        <div class="info-box">
+          <div class="info-icon">🔍</div>
+          <div>
+            <strong>טיפ מקצועי:</strong> שלבו את שתי השיטות. בתאים שיש להם הרבה אפשרויות — נסו את שיטת המיקום הבלעדי.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-outline" onclick="showLearnStep(2)">→ חזרה</button>
+          <button class="btn-primary" onclick="showLearnStep(4)">טיפים ←</button>
+        </div>
+      </article>
+
+      <!-- Step 4: Tips -->
+      <article class="learn-step" data-step="4">
+        <h2>טיפים ואסטרטגיה</h2>
+        <p class="step-intro">כמה עקרונות פשוטים שיהפכו אתכם לפותרים טובים יותר.</p>
+
+        <div class="tips-grid">
+          <div class="tip-card">
+            <div class="tip-icon">🔢</div>
+            <h3>התחילו עם המספרים השכיחים</h3>
+            <p>המספר שמופיע הכי הרבה בלוח קל יותר למקם. התחילו איתו.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">📍</div>
+            <h3>מצאו שורות/עמודות כמעט מלאות</h3>
+            <p>שורה עם 8 מספרים נחתמת בבת אחת — פשוט.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">✏️</div>
+            <h3>כתבו "עיפרון" (קנדידטים)</h3>
+            <p>רשמו בפינת התא את כל האפשרויות. כשאחת מתבטלת — מחקו.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🔄</div>
+            <h3>עברו מחדש על הלוח</h3>
+            <p>כל מספר שמלאתם עלול לפתוח אפשרויות חדשות. חזרו לתחילה!</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🧘</div>
+            <h3>אל תנחשו</h3>
+            <p>סודוקו פותרים בלוגיקה בלבד. אם אתם מנחשים — חזרו אחורה.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">⚡</div>
+            <h3>התחילו מהרמה הקלה</h3>
+            <p>הרמה הקלה מכילה יותר מספרים נתונים — קל יותר לתרגל בה.</p>
+          </div>
+        </div>
+
+        <div class="info-box success">
+          <div class="info-icon">🎉</div>
+          <div>
+            <strong>מוכנים לתרגל?</strong> עכשיו שאתם מכירים את הכללים והשיטות — הגיע הזמן לשחק!
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-outline" onclick="showLearnStep(3)">→ חזרה</button>
+          <button class="btn-primary" onclick="showSection('practice')">🎮 עבור לתרגול ←</button>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== PRACTICE ===== -->
+<main id="section-practice" class="section">
+  <div class="practice-layout">
+
+    <div class="practice-controls">
+      <h2 class="practice-title">בחרו רמת קושי</h2>
+      <div class="difficulty-btns">
+        <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy')">
+          <span class="diff-label">קל</span>
+          <span class="diff-sub">45+ מספרים נתונים</span>
+        </button>
+        <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium')">
+          <span class="diff-label">בינוני</span>
+          <span class="diff-sub">35 מספרים נתונים</span>
+        </button>
+        <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">
+          <span class="diff-label">קשה</span>
+          <span class="diff-sub">25 מספרים נתונים</span>
+        </button>
+      </div>
+
+      <div class="game-actions">
+        <button class="btn-primary" onclick="newGame()">🔄 תשבץ חדש</button>
+        <button class="btn-outline hint-btn" onclick="getHint()">💡 רמז</button>
+        <button class="btn-outline check-btn" onclick="checkBoard()">✅ בדוק</button>
+        <button class="btn-outline solve-btn" onclick="solveBoard()">🔍 פתרון</button>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat">
+          <div class="stat-val" id="timer-display">00:00</div>
+          <div class="stat-label">זמן</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="errors-display">0</div>
+          <div class="stat-label">שגיאות</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="hints-display">3</div>
+          <div class="stat-label">רמזים</div>
+        </div>
+      </div>
+
+      <div id="game-message" class="game-message" role="alert" aria-live="polite"></div>
+
+      <div class="numpad">
+        <div class="numpad-label">לחצו על תא ואז על מספר:</div>
+        <div class="numpad-grid">
+          <button class="num-btn" onclick="enterNumber(1)" data-testid="num-1">1</button>
+          <button class="num-btn" onclick="enterNumber(2)" data-testid="num-2">2</button>
+          <button class="num-btn" onclick="enterNumber(3)" data-testid="num-3">3</button>
+          <button class="num-btn" onclick="enterNumber(4)" data-testid="num-4">4</button>
+          <button class="num-btn" onclick="enterNumber(5)" data-testid="num-5">5</button>
+          <button class="num-btn" onclick="enterNumber(6)" data-testid="num-6">6</button>
+          <button class="num-btn" onclick="enterNumber(7)" data-testid="num-7">7</button>
+          <button class="num-btn" onclick="enterNumber(8)" data-testid="num-8">8</button>
+          <button class="num-btn" onclick="enterNumber(9)" data-testid="num-9">9</button>
+          <button class="num-btn erase-btn" onclick="enterNumber(0)" data-testid="num-erase">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-area">
+      <div class="sudoku-board" id="sudoku-board" role="grid" aria-label="לוח סודוקו"></div>
+      <div class="board-legend">
+        <span><span class="legend-sq given"></span> נתון</span>
+        <span><span class="legend-sq user"></span> הזנת</span>
+        <span><span class="legend-sq error-sq"></span> שגיאה</span>
+        <span><span class="legend-sq selected"></span> נבחר</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- WIN MODAL -->
+<div class="modal-overlay" id="win-modal" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
+  <div class="modal-box">
+    <div class="win-emoji">🎉</div>
+    <h2 id="win-title">כל הכבוד!</h2>
+    <p id="win-text">פתרתם את התשבץ בהצלחה!</p>
+    <div class="win-stats">
+      <div class="win-stat"><span id="win-time">--</span><small>זמן</small></div>
+      <div class="win-stat"><span id="win-errors">--</span><small>שגיאות</small></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="newGame(); closeModal('win-modal')">תשבץ חדש</button>
+      <button class="btn-outline" onclick="closeModal('win-modal')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>בנוי עם ❤️ לכל מי שרוצה ללמוד סודוקו</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
