@@ -700,7 +700,98 @@ function showMessage(msg, type = '') {
   el.className = 'game-message' + (type ? ' ' + type : '');
 }
 
+// ===== iOS / TOUCH SUPPORT =====
+
+// Prevent iOS double-tap zoom on buttons and cells
+function preventDoubleTapZoom(el) {
+  let lastTap = 0;
+  el.addEventListener('touchend', function(e) {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      e.preventDefault();
+    }
+    lastTap = now;
+  }, { passive: false });
+}
+
+// Vibrate on cell selection (works on Android; iOS 13+ via AudioContext trick)
+function hapticLight() {
+  if (navigator.vibrate) navigator.vibrate(10);
+  // iOS Safari: use a tiny AudioContext click for tactile feedback simulation
+  try {
+    if (window._hapticAC) {
+      const osc = window._hapticAC.createOscillator();
+      const gain = window._hapticAC.createGain();
+      osc.connect(gain);
+      gain.connect(window._hapticAC.destination);
+      gain.gain.setValueAtTime(0, window._hapticAC.currentTime);
+      osc.start();
+      osc.stop(window._hapticAC.currentTime + 0.001);
+    }
+  } catch(_) {}
+}
+
+// Swipe-to-navigate between sections on mobile
+(function setupSwipeNav() {
+  const sections = ['home', 'learn', 'practice'];
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    // Only swipe from edges (within 30px of screen edge)
+    if (touchStartX > 30 && touchStartX < window.innerWidth - 30) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // Horizontal swipe, not vertical scroll
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+
+    const activeBtn = document.querySelector('.nav-btn.active');
+    if (!activeBtn) return;
+    const currentSection = activeBtn.dataset.section;
+    const idx = sections.indexOf(currentSection);
+
+    // RTL: swipe right = previous section, swipe left = next section
+    if (dx > 0 && idx > 0) showSection(sections[idx - 1]);
+    if (dx < 0 && idx < sections.length - 1) showSection(sections[idx + 1]);
+  }, { passive: true });
+})();
+
+// Prevent iOS overscroll rubber-band on practice board interaction
+document.getElementById && document.addEventListener('DOMContentLoaded', () => {
+  const board = document.getElementById('sudoku-board');
+  if (board) {
+    board.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+  }
+});
+
+// Unlock AudioContext for iOS haptics on first touch
+document.addEventListener('touchstart', function unlockAudio() {
+  try {
+    window._hapticAC = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(_) {}
+  document.removeEventListener('touchstart', unlockAudio);
+}, { once: true, passive: true });
+
+// Apply double-tap prevention to all buttons after DOM ready
+function applyIOSTouchFixes() {
+  document.querySelectorAll('button, .sudoku-cell, .num-btn, .diff-btn').forEach(el => {
+    preventDoubleTapZoom(el);
+  });
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   showSection('home');
+  // Delay touch fix setup so dynamic elements (board) are also covered
+  setTimeout(applyIOSTouchFixes, 500);
+
+  // Handle PWA shortcut URLs
+  const hash = window.location.hash;
+  if (hash === '#practice') showSection('practice');
+  if (hash === '#learn') showSection('learn');
 });

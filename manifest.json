@@ -1,0 +1,43 @@
+{
+  "name": "סודוקו — לומדים ומשחקים",
+  "short_name": "סודוקו",
+  "description": "לומדים סודוקו מאפס — הסברים ברורים, שלבים פשוטים ותרגול אינטראקטיבי",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f6fa",
+  "theme_color": "#4a6cf7",
+  "orientation": "portrait-primary",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "education", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "תרגול מיידי",
+      "short_name": "תרגול",
+      "description": "עבור ישר ללוח המשחק",
+      "url": "./#practice",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "למד לשחק",
+      "short_name": "לימוד",
+      "description": "מדריך למתחילים",
+      "url": "./#learn",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    }
+  ]
+}
