@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <!-- iOS / PWA meta -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="סודוקו" />
@@ -379,16 +379,12 @@
         </button>
       </div>
 
-      <div class="game-actions">
-        <button class="btn-primary" onclick="newGame()">🔄 תשבץ חדש</button>
-        <button class="btn-outline hint-btn" onclick="getHint()">💡 רמז</button>
-        <button class="btn-outline check-btn" onclick="checkBoard()">✅ בדוק</button>
-        <button class="btn-outline solve-btn" onclick="solveBoard()">🔍 פתרון</button>
-      </div>
-
       <div class="game-stats">
-        <div class="stat">
-          <div class="stat-val" id="timer-display">00:00</div>
+        <div class="stat timer-stat">
+          <div class="timer-row">
+            <div class="stat-val" id="timer-display">00:00</div>
+            <button class="pause-btn" id="pause-btn" onclick="togglePause()" aria-label="השהה משחק">השהה</button>
+          </div>
           <div class="stat-label">זמן</div>
         </div>
         <div class="stat">
@@ -403,26 +399,43 @@
 
       <div id="game-message" class="game-message" role="alert" aria-live="polite"></div>
 
-      <div class="numpad">
-        <div class="numpad-label">לחצו על תא ואז על מספר:</div>
-        <div class="numpad-grid">
-          <button class="num-btn" onclick="enterNumber(1)" data-testid="num-1">1</button>
-          <button class="num-btn" onclick="enterNumber(2)" data-testid="num-2">2</button>
-          <button class="num-btn" onclick="enterNumber(3)" data-testid="num-3">3</button>
-          <button class="num-btn" onclick="enterNumber(4)" data-testid="num-4">4</button>
-          <button class="num-btn" onclick="enterNumber(5)" data-testid="num-5">5</button>
-          <button class="num-btn" onclick="enterNumber(6)" data-testid="num-6">6</button>
-          <button class="num-btn" onclick="enterNumber(7)" data-testid="num-7">7</button>
-          <button class="num-btn" onclick="enterNumber(8)" data-testid="num-8">8</button>
-          <button class="num-btn" onclick="enterNumber(9)" data-testid="num-9">9</button>
-          <button class="num-btn erase-btn" onclick="enterNumber(0)" data-testid="num-erase">✕</button>
+      <div class="bottom-toolbar">
+        <div class="game-actions">
+          <button class="btn-primary" onclick="newGame()" aria-label="תשבץ חדש">🔄 תשבץ חדש</button>
+          <button class="btn-outline hint-btn" onclick="getHint()" aria-label="קבל רמז">💡 רמז</button>
+          <button class="btn-outline check-btn" onclick="checkBoard()" aria-label="בדוק תשובות">✅ בדוק</button>
+          <button class="btn-outline solve-btn" onclick="solveBoard()" aria-label="הראה פתרון">🔍 פתרון</button>
+        </div>
+        <div class="numpad" role="group" aria-label="לוח מספרים">
+          <div class="numpad-label" aria-hidden="true">לחצו על תא ואז על מספר:</div>
+          <div class="numpad-grid">
+            <button class="num-btn" onclick="enterNumber(1)" data-testid="num-1" aria-label="הזן 1">1</button>
+            <button class="num-btn" onclick="enterNumber(2)" data-testid="num-2" aria-label="הזן 2">2</button>
+            <button class="num-btn" onclick="enterNumber(3)" data-testid="num-3" aria-label="הזן 3">3</button>
+            <button class="num-btn" onclick="enterNumber(4)" data-testid="num-4" aria-label="הזן 4">4</button>
+            <button class="num-btn" onclick="enterNumber(5)" data-testid="num-5" aria-label="הזן 5">5</button>
+            <button class="num-btn" onclick="enterNumber(6)" data-testid="num-6" aria-label="הזן 6">6</button>
+            <button class="num-btn" onclick="enterNumber(7)" data-testid="num-7" aria-label="הזן 7">7</button>
+            <button class="num-btn" onclick="enterNumber(8)" data-testid="num-8" aria-label="הזן 8">8</button>
+            <button class="num-btn" onclick="enterNumber(9)" data-testid="num-9" aria-label="הזן 9">9</button>
+            <button class="num-btn erase-btn" onclick="enterNumber(0)" data-testid="num-erase" aria-label="מחק מספר">✕</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="board-area">
-      <div class="sudoku-board" id="sudoku-board" role="grid" aria-label="לוח סודוקו"></div>
-      <div class="board-legend">
+      <div class="board-wrapper">
+        <div class="sudoku-board" id="sudoku-board" role="grid" aria-label="לוח סודוקו"></div>
+        <div class="pause-overlay" id="pause-overlay" hidden role="status" aria-live="polite">
+          <div class="pause-content">
+            <span class="pause-icon" aria-hidden="true">⏸</span>
+            <span class="pause-label">מושהה</span>
+            <button class="btn-primary pause-resume-btn" onclick="togglePause()" aria-label="המשך משחק">המשך</button>
+          </div>
+        </div>
+      </div>
+      <div class="board-legend" aria-hidden="true">
         <span><span class="legend-sq given"></span> נתון</span>
         <span><span class="legend-sq user"></span> הזנת</span>
         <span><span class="legend-sq error-sq"></span> שגיאה</span>
@@ -455,5 +468,10 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
 </body>
 </html>

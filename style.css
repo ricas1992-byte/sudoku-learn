@@ -48,6 +48,13 @@
   --color-user:           #4a6cf7;
   --color-error-cell:     #ef4444;
 
+  /* Board cell highlight palette */
+  --cell-box-tint-b:      #edf1ff;
+  --cell-given-tint-b:    #e4eaff;
+  --cell-selected:        #b8caff;
+  --cell-highlighted:     #e4eaff;
+  --cell-same-num:        #ccd8ff;
+
   --shadow-sm: 0 1px 3px rgba(74,108,247,0.08);
   --shadow-md: 0 4px 16px rgba(74,108,247,0.12);
   --shadow-lg: 0 12px 40px rgba(74,108,247,0.16);
@@ -78,6 +85,13 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+
+  /* Board cell highlights — dark variants */
+  --cell-box-tint-b:      #1c2044;
+  --cell-given-tint-b:    #232751;
+  --cell-selected:        #2e3f7f;
+  --cell-highlighted:     #1e2450;
+  --cell-same-num:        #253070;
 }
 
 /* ===== BASE ===== */
@@ -825,7 +839,7 @@ h1,h2,h3,h4 {
 
 .game-stats {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: 2fr 1fr 1fr;
   gap: var(--space-3);
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
@@ -932,17 +946,16 @@ h1,h2,h3,h4 {
   color: var(--color-user);
 }
 .sudoku-cell.selected {
-  background: var(--color-primary-light) !important;
-  border-color: var(--color-primary) !important;
-  outline: 2px solid var(--color-primary);
+  background: var(--cell-selected) !important;
+  outline: 3px solid var(--color-primary);
   outline-offset: -2px;
   z-index: 2;
 }
 .sudoku-cell.highlighted {
-  background: var(--color-surface-offset);
+  background: var(--cell-highlighted);
 }
 .sudoku-cell.same-num {
-  background: var(--color-primary-light);
+  background: var(--cell-same-num);
 }
 .sudoku-cell.error-cell {
   color: var(--color-error) !important;
@@ -951,13 +964,146 @@ h1,h2,h3,h4 {
 .sudoku-cell.hint-cell {
   background: var(--color-success-bg) !important;
   color: var(--color-success) !important;
-  animation: pulse-hint 0.6s ease;
+  animation: pulse-hint 0.7s ease;
 }
 
 @keyframes pulse-hint {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(1);    opacity: 1; }
+  40%  { transform: scale(1.12); opacity: 0.9; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* Phase-1 hint glow (candidates revealed) */
+.sudoku-cell.hint-phase1 {
+  animation: hint-glow 1.4s ease forwards;
+}
+@keyframes hint-glow {
+  0%   { box-shadow: 0 0 0 2px var(--color-warning); }
+  50%  { box-shadow: 0 0 0 4px var(--color-warning), 0 0 14px rgba(245,158,11,0.45); }
+  100% { box-shadow: none; }
+}
+
+/* ===== BOX TINTS: alternating checkerboard pattern on 3×3 boxes ===== */
+/* Even boxes (0,2,4,6,8): default surface — no extra rule needed        */
+/* Odd  boxes (1,3,5,7):   subtle lavender tint                          */
+.sudoku-cell[data-box="1"],
+.sudoku-cell[data-box="3"],
+.sudoku-cell[data-box="5"],
+.sudoku-cell[data-box="7"] {
+  background: var(--cell-box-tint-b);
+}
+
+/* Given cells inherit their own bg; tinted-box given cells get a       */
+/* slightly deeper tint so the box pattern stays visible                 */
+.sudoku-cell.given[data-box="1"],
+.sudoku-cell.given[data-box="3"],
+.sudoku-cell.given[data-box="5"],
+.sudoku-cell.given[data-box="7"] {
+  background: var(--cell-given-tint-b);
+}
+
+/* Highlighted / same-num / selected / error always win via specificity  */
+/* (they come later in the cascade and use !important where needed)      */
+
+/* ===== BOARD WRAPPER + PAUSE OVERLAY ===== */
+.board-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 16, 34, 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: var(--radius-md);
+  animation: fade-in 0.2s ease;
+}
+.pause-overlay[hidden] { display: none; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.pause-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.pause-icon {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+.pause-label {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.pause-resume-btn {
+  min-width: 130px;
+  justify-content: center;
+}
+
+/* ===== TIMER ROW + PAUSE BUTTON ===== */
+.timer-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.pause-btn {
+  padding: 3px var(--space-2);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 22px;
+  white-space: nowrap;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.pause-btn:hover,
+.pause-btn:active { background: var(--color-primary); color: #fff; }
+
+/* ===== BOTTOM TOOLBAR ===== */
+.bottom-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .bottom-toolbar {
+    position: sticky;
+    bottom: 0;
+    background: var(--color-surface);
+    border-top: 2px solid var(--color-border);
+    margin-inline: calc(-1 * var(--space-3));
+    padding: var(--space-3) var(--space-3) max(var(--space-3), var(--safe-bottom));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+    z-index: 50;
+  }
 }
 
 .board-legend {
@@ -984,6 +1130,7 @@ h1,h2,h3,h4 {
   background: rgba(15,16,34,0.7);
   display: flex; align-items: center; justify-content: center;
   padding: var(--space-6);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .modal-overlay[hidden] { display: none; }

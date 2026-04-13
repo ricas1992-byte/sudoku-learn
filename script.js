@@ -331,6 +331,8 @@ let errorCount = 0;
 let hintsLeft = 3;
 let gameWon = false;
 let gameInitialized = false;
+let isPaused = false;
+let cellHintPhase = {}; // "r_c" → 0 unused | 1 candidates shown | 2 revealed
 
 // ===== PUZZLE GENERATOR =====
 function generateSolvedBoard() {
@@ -397,8 +399,85 @@ function removeNumbers(solved, difficulty) {
   return puzzle;
 }
 
+// ===== CANDIDATES =====
+function getCandidates(row, col) {
+  const used = new Set();
+  for (let c = 0; c < 9; c++) if (board[row][c]) used.add(board[row][c]);
+  for (let r = 0; r < 9; r++) if (board[r][col]) used.add(board[r][col]);
+  const br = Math.floor(row / 3) * 3, bc = Math.floor(col / 3) * 3;
+  for (let r = br; r < br + 3; r++)
+    for (let c = bc; c < bc + 3; c++)
+      if (board[r][c]) used.add(board[r][c]);
+  const candidates = [];
+  for (let n = 1; n <= 9; n++) if (!used.has(n)) candidates.push(n);
+  return candidates;
+}
+
+// ===== HAPTICS =====
+function hapticError() {
+  if (navigator.vibrate) navigator.vibrate([30, 15, 30]);
+}
+
+// ===== LOCALSTORAGE PERSISTENCE =====
+const SAVE_KEY = 'sudoku-state';
+
+function saveGameState() {
+  if (gameWon) return;
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      board, solution, given,
+      timerSeconds, errorCount, hintsLeft,
+      difficulty: currentDifficulty,
+      cellHintPhase
+    }));
+  } catch (_) {}
+}
+
+function loadGameState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function clearGameState() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (_) {}
+}
+
 // ===== GAME INIT =====
-function initGame() {
+function initGame(forceNew) {
+  stopTimer();
+  isPaused = false;
+
+  // Try to restore a saved game (unless forceNew is true)
+  if (!forceNew) {
+    const saved = loadGameState();
+    if (saved) {
+      board = saved.board;
+      solution = saved.solution;
+      given = saved.given;
+      timerSeconds = saved.timerSeconds || 0;
+      errorCount = saved.errorCount || 0;
+      hintsLeft = saved.hintsLeft !== undefined ? saved.hintsLeft : 3;
+      cellHintPhase = saved.cellHintPhase || {};
+      currentDifficulty = saved.difficulty || currentDifficulty;
+      document.querySelectorAll('.diff-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.diff === currentDifficulty)
+      );
+      selectedCell = null;
+      gameWon = false;
+      updateStats();
+      renderBoard();
+      startTimer();
+      updatePauseButton();
+      showMessage('ברוכים השבים! ממשיכים מהיכן שעצרתם', 'info');
+      return;
+    }
+  }
+
+  // Generate a fresh puzzle
   solution = generateSolvedBoard();
   const puzzle = removeNumbers(solution, currentDifficulty);
   board = puzzle.map(r => [...r]);
@@ -406,23 +485,28 @@ function initGame() {
   selectedCell = null;
   errorCount = 0;
   hintsLeft = 3;
+  cellHintPhase = {};
   gameWon = false;
-  stopTimer();
   timerSeconds = 0;
   updateStats();
   renderBoard();
   startTimer();
+  updatePauseButton();
   showMessage('');
 }
 
 function newGame() {
-  initGame();
+  clearGameState();
+  initGame(true);
 }
 
 function setDifficulty(diff) {
   currentDifficulty = diff;
   document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.diff === diff));
-  if (gameInitialized) initGame();
+  if (gameInitialized) {
+    clearGameState();
+    initGame(true);
+  }
 }
 
 // ===== RENDER =====
@@ -440,9 +524,10 @@ function renderBoard() {
       cell.setAttribute('aria-label', `שורה ${r + 1} עמודה ${c + 1}`);
       cell.setAttribute('data-testid', `cell-${r}-${c}`);
 
-      // data attributes for CSS 3x3 borders
+      // data attributes for CSS 3×3 borders and box tints
       cell.setAttribute('data-col', c);
       cell.setAttribute('data-row', r);
+      cell.setAttribute('data-box', Math.floor(r / 3) * 3 + Math.floor(c / 3));
 
       const val = board[r][c];
       if (val !== 0) cell.textContent = val;
@@ -465,8 +550,9 @@ function getCellEl(r, c) {
 }
 
 function selectCell(r, c) {
-  if (gameWon) return;
+  if (gameWon || isPaused) return;
   selectedCell = { row: r, col: c };
+  hapticLight();
   applyHighlights();
 }
 
@@ -512,14 +598,14 @@ function applyHighlights() {
 
 // ===== NUMBER ENTRY =====
 function enterNumber(num) {
-  if (!selectedCell || gameWon) return;
+  if (!selectedCell || gameWon || isPaused) return;
   const { row, col } = selectedCell;
-  if (given[row][col]) { showMessage('תא זה ניתן ואינו ניתן לעריכה', 'error'); return; }
+  if (given[row][col]) { showMessage('תא זה ניתן ואינו ניתן לעריכה', 'error'); hapticError(); return; }
 
   if (num === 0) {
     board[row][col] = 0;
   } else {
-    if (board[row][col] === num) { board[row][col] = 0; } // toggle
+    if (board[row][col] === num) { board[row][col] = 0; } // toggle off
     else board[row][col] = num;
   }
 
@@ -529,22 +615,24 @@ function enterNumber(num) {
     cell.classList.toggle('user-entry', board[row][col] !== 0);
   }
 
-  // Check if incorrect
+  // Check correctness
   if (num !== 0 && board[row][col] !== 0 && board[row][col] !== solution[row][col]) {
     errorCount++;
     updateStats();
+    hapticError();
     showMessage('שגיאה! המספר אינו נכון במקום זה.', 'error');
   } else {
     showMessage('');
   }
 
+  saveGameState();
   applyHighlights();
   checkWin();
 }
 
 // Keyboard support
 document.addEventListener('keydown', e => {
-  if (!selectedCell || gameWon) return;
+  if (!selectedCell || gameWon || isPaused) return;
   const { row, col } = selectedCell;
 
   if (e.key >= '1' && e.key <= '9') {
@@ -592,34 +680,88 @@ function checkBoard() {
   applyHighlights();
 }
 
-// ===== HINT =====
+// ===== HINT (context-aware, two-phase) =====
+// Phase 1 (costs 1 hint): show candidate numbers for the selected cell.
+// Phase 2 (free):         reveal the correct answer in that same cell.
+// Design decision: both phases share one hint unit, charged at phase 1.
 function getHint() {
-  if (gameWon || hintsLeft <= 0) {
-    showMessage('אין רמזים נוספים.', 'error');
+  if (gameWon || isPaused) return;
+
+  if (!selectedCell) {
+    showMessage('בחר תא תחילה', 'error');
+    hapticError();
     return;
   }
 
-  // Find an empty cell
-  const empties = [];
-  for (let r = 0; r < 9; r++)
-    for (let c = 0; c < 9; c++)
-      if (!given[r][c] && board[r][c] === 0) empties.push([r, c]);
+  const { row, col } = selectedCell;
+  const key = `${row}_${col}`;
 
-  if (empties.length === 0) { checkBoard(); return; }
-
-  const [r, c] = empties[Math.floor(Math.random() * empties.length)];
-  board[r][c] = solution[r][c];
-
-  const cell = getCellEl(r, c);
-  if (cell) {
-    cell.textContent = solution[r][c];
-    cell.classList.add('user-entry', 'hint-cell');
-    setTimeout(() => cell.classList.remove('hint-cell'), 1000);
+  if (given[row][col]) {
+    showMessage('תא זה הוא נתון ואינו ניתן לעריכה', 'error');
+    hapticError();
+    return;
   }
 
-  hintsLeft--;
-  updateStats();
-  showMessage(`רמז: מספר ${solution[r][c]} בשורה ${r + 1}, עמודה ${c + 1}`, 'info');
+  // Cell already has the correct value
+  if (board[row][col] !== 0 && board[row][col] === solution[row][col]) {
+    showMessage('תא זה כבר נכון! ', 'success');
+    return;
+  }
+
+  // Cell already fully revealed by hint
+  if ((cellHintPhase[key] || 0) === 2) {
+    showMessage('תא זה כבר קיבל רמז מלא', 'info');
+    return;
+  }
+
+  const phase = cellHintPhase[key] || 0;
+  const cellEl = getCellEl(row, col);
+
+  if (phase === 0) {
+    // ── Phase 1: show candidates ──
+    if (hintsLeft <= 0) {
+      showMessage('אין רמזים נוספים', 'error');
+      hapticError();
+      return;
+    }
+    const candidates = getCandidates(row, col);
+    cellHintPhase[key] = 1;
+    hintsLeft--;
+    updateStats();
+    hapticLight();
+
+    if (cellEl) {
+      cellEl.classList.remove('hint-phase1');
+      void cellEl.offsetWidth; // force reflow so animation replays
+      cellEl.classList.add('hint-phase1');
+      setTimeout(() => cellEl.classList.remove('hint-phase1'), 1500);
+    }
+
+    if (candidates.length === 1) {
+      showMessage(`מועמד יחיד: ${candidates[0]} — לחץ שוב על "רמז" לגילוי`, 'info');
+    } else if (candidates.length === 0) {
+      showMessage('שגיאה בלוח — תא זה אינו פתיר עם הערכים הנוכחיים', 'error');
+    } else {
+      showMessage(`מועמדים אפשריים: ${candidates.join(', ')} — לחץ שוב על "רמז" לגילוי`, 'info');
+    }
+    saveGameState();
+    return;
+  }
+
+  // ── Phase 2: reveal answer (free) ──
+  board[row][col] = solution[row][col];
+  cellHintPhase[key] = 2;
+
+  if (cellEl) {
+    cellEl.textContent = solution[row][col];
+    cellEl.classList.add('user-entry', 'hint-cell');
+    cellEl.classList.remove('hint-phase1');
+    setTimeout(() => cellEl.classList.remove('hint-cell'), 1200);
+  }
+
+  hapticLight();
+  showMessage(`גילוי: המספר הנכון הוא ${solution[row][col]}`, 'success');
+  saveGameState();
   applyHighlights();
   checkWin();
 }
@@ -655,12 +797,14 @@ function checkWin() {
 function winGame() {
   gameWon = true;
   stopTimer();
+  clearGameState();
+  if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 100]);
   const timeStr = formatTime(timerSeconds);
   document.getElementById('win-time').textContent = timeStr;
   document.getElementById('win-errors').textContent = errorCount;
   document.getElementById('win-text').textContent =
     errorCount === 0
-      ? `פתרתם ללא שגיאות אחת! מדהים!`
+      ? 'פתרתם ללא שגיאות אחת! מדהים!'
       : `פתרתם עם ${errorCount} שגיאות. כל הכבוד!`;
   document.getElementById('win-modal').removeAttribute('hidden');
 }
@@ -679,7 +823,53 @@ function startTimer() {
 
 function stopTimer() {
   clearInterval(timerInterval);
+  timerInterval = null;
 }
+
+// ===== PAUSE =====
+function togglePause() {
+  if (gameWon) return;
+  if (isPaused) resumeGame();
+  else pauseGame();
+}
+
+function pauseGame() {
+  if (isPaused || gameWon || !gameInitialized) return;
+  isPaused = true;
+  stopTimer();
+  saveGameState();
+  document.getElementById('pause-overlay').removeAttribute('hidden');
+  updatePauseButton();
+  selectedCell = null;
+  applyHighlights();
+}
+
+function resumeGame() {
+  if (!isPaused) return;
+  isPaused = false;
+  document.getElementById('pause-overlay').setAttribute('hidden', '');
+  updatePauseButton();
+  startTimer();
+}
+
+function updatePauseButton() {
+  const btn = document.getElementById('pause-btn');
+  if (!btn) return;
+  if (isPaused) {
+    btn.textContent = 'המשך';
+    btn.setAttribute('aria-label', 'המשך משחק');
+  } else {
+    btn.textContent = 'השהה';
+    btn.setAttribute('aria-label', 'השהה משחק');
+  }
+}
+
+// Auto-pause when tab / app goes to background
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !isPaused && !gameWon && gameInitialized) {
+    pauseGame();
+  }
+});
 
 function formatTime(s) {
   const m = Math.floor(s / 60);
@@ -795,3 +985,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (hash === '#practice') showSection('practice');
   if (hash === '#learn') showSection('learn');
 });
+
+// Persist timer progress every 15 s (catch cases where page is force-closed)
+setInterval(() => {
+  if (gameInitialized && !gameWon && !isPaused) saveGameState();
+}, 15000);
