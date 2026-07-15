@@ -43,9 +43,9 @@
   --color-warning:        #f59e0b;
   --color-warning-bg:     #fef3c7;
 
-  --color-given:          #1a1d36;
-  --color-given-bg:       #eef0ff;
-  --color-user:           #4a6cf7;
+  --color-given:          #000000;
+  --color-given-bg:       #ffffff;
+  --color-user:           #000000;
   --color-error-cell:     #ef4444;
 
   /* Board cell highlight palette */
@@ -54,6 +54,9 @@
   --cell-selected:        #b8caff;
   --cell-highlighted:     #e4eaff;
   --cell-same-num:        #ccd8ff;
+    --cell-hl-row:         #FFF3CD;
+  --cell-hl-col:         #D0EAFF;
+  --cell-hl-box:         #EDEDF0;
 
   --shadow-sm: 0 1px 3px rgba(74,108,247,0.08);
   --shadow-md: 0 4px 16px rgba(74,108,247,0.12);
@@ -79,9 +82,9 @@
   --color-primary-hover:  #8aa3ff;
   --color-primary-active: #aabbff;
   --color-primary-light:  #1e2450;
-  --color-given:          #c8ceff;
+  --color-given:          #ffffff;
   --color-given-bg:       #1e2450;
-  --color-user:           #7b9fff;
+  --color-user:           #ffffff;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
@@ -91,6 +94,9 @@
   --cell-given-tint-b:    #232751;
   --cell-selected:        #2e3f7f;
   --cell-highlighted:     #1e2450;
+    --cell-hl-row:         #3d3200;
+  --cell-hl-col:         #0b2e50;
+  --cell-hl-box:         #252535;
   --cell-same-num:        #253070;
 }
 
