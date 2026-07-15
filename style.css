@@ -954,9 +954,9 @@ h1,h2,h3,h4 {
 .sudoku-cell.highlighted {
   background: var(--cell-highlighted);
 }
-.sudoku-cell.hl-row { background: var(--cell-hl-row); }
-.sudoku-cell.hl-col { background: var(--cell-hl-col); }
-.sudoku-cell.hl-box { background: var(--cell-hl-box); }
+.sudoku-cell.hl-row { background: var(--cell-hl-row) !important; }
+.sudoku-cell.hl-col { background: var(--cell-hl-col) !important; }
+.sudoku-cell.hl-box { background: var(--cell-hl-box) !important; }
 .sudoku-cell.same-num {
   background: var(--cell-same-num);
 }
