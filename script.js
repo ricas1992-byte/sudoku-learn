@@ -559,7 +559,7 @@ function selectCell(r, c) {
 function applyHighlights() {
   const cells = document.querySelectorAll('.sudoku-cell');
   cells.forEach(cell => {
-    cell.classList.remove('selected', 'highlighted', 'same-num', 'error-cell', 'hint-cell');
+    cell.classList.remove('selected', 'highlighted', 'hl-row', 'hl-col', 'hl-box', 'same-num', 'error-cell', 'hint-cell');
   });
 
   cells.forEach(cell => {
@@ -582,12 +582,10 @@ function applyHighlights() {
     const c = parseInt(cell.dataset.col);
 
     if (r === row && c === col) {
-      cell.classList.add('selected');
-    } else if (
-      r === row || c === col ||
-      (Math.floor(r / 3) === Math.floor(row / 3) && Math.floor(c / 3) === Math.floor(col / 3))
-    ) {
-      cell.classList.add('highlighted');
+      cell.classList.add('selected');} else {
+          if (r === row) cell.classList.add('hl-row');
+          if (c === col) cell.classList.add('hl-col');
+          if (Math.floor(r / 3) === Math.floor(row / 3) && Math.floor(c / 3) === Math.floor(col / 3)) cell.classList.add('hl-box');
     }
 
     if (selVal !== 0 && board[r][c] === selVal && !(r === row && c === col)) {
