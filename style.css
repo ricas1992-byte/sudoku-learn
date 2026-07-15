@@ -1,5 +1,5 @@
 /* ===== DESIGN TOKENS ===== */
-/* v2: color fix — given=#000 user=#000 given-bg=#fff hl-row=#FFF3CD hl-col=#D0EAFF hl-box=#EDEDF0 */
+/* v2: color fix — given=#000 user=#000 given-bg=#fff hl-row=#ffffff hl-col=#ffffff hl-box=#ffffff */
 :root {
   --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --text-sm:   clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
@@ -50,14 +50,14 @@
   --color-error-cell:     #ef4444;
 
   /* Board cell highlight palette */
-  --cell-box-tint-b:      #edf1ff;
-  --cell-given-tint-b:    #e4eaff;
+  --cell-box-tint-b:      #ffffff;
+  --cell-given-tint-b:    #ffffff;
   --cell-selected:        #b8caff;
-  --cell-highlighted:     #e4eaff;
-  --cell-same-num:        #ccd8ff;
-    --cell-hl-row:         #FFF3CD;
-  --cell-hl-col:         #D0EAFF;
-  --cell-hl-box:         #EDEDF0;
+  --cell-highlighted:     #ffffff;
+  --cell-same-num:        #ffffff;
+    --cell-hl-row:         #ffffff;
+  --cell-hl-col:         #ffffff;
+  --cell-hl-box:         #ffffff;
 
   --shadow-sm: 0 1px 3px rgba(74,108,247,0.08);
   --shadow-md: 0 4px 16px rgba(74,108,247,0.12);
@@ -82,23 +82,23 @@
   --color-primary:        #6b8dff;
   --color-primary-hover:  #8aa3ff;
   --color-primary-active: #aabbff;
-  --color-primary-light:  #1e2450;
+  --color-primary-light:  #161830;
   --color-given:          #ffffff;
-  --color-given-bg:       #1e2450;
+  --color-given-bg:       #161830;
   --color-user:           #ffffff;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
 
   /* Board cell highlights — dark variants */
-  --cell-box-tint-b:      #1c2044;
-  --cell-given-tint-b:    #232751;
+  --cell-box-tint-b:      #161830;
+  --cell-given-tint-b:    #161830;
   --cell-selected:        #2e3f7f;
-  --cell-highlighted:     #1e2450;
-    --cell-hl-row:         #3d3200;
-  --cell-hl-col:         #0b2e50;
-  --cell-hl-box:         #252535;
-  --cell-same-num:        #253070;
+  --cell-highlighted:     #161830;
+    --cell-hl-row:         #161830;
+  --cell-hl-col:         #161830;
+  --cell-hl-box:         #161830;
+  --cell-same-num:        #161830;
 }
 
 /* ===== BASE ===== */
@@ -616,19 +616,19 @@ h1,h2,h3,h4 {
   transition: all var(--transition);
   color: var(--color-text-muted);
 }
-.ex-cell.highlight-row { background: #FFF3CD; }
-.ex-cell.highlight-col { background: #D0EAFF; }
-.ex-cell.highlight-box { background: #fce7f3; }
+.ex-cell.highlight-row { background: #ffffff; }
+.ex-cell.highlight-col { background: #ffffff; }
+.ex-cell.highlight-box { background: #ffffff; }
 .ex-cell.highlight-row.highlight-col,
 .ex-cell.highlight-row.highlight-box,
-.ex-cell.highlight-col.highlight-box { background: #f0fdf4; }
+.ex-cell.highlight-col.highlight-box { background: #ffffff; }
 
 .explain-legend { display: flex; flex-direction: column; gap: var(--space-3); }
 .legend-item { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
 .legend-dot { width: 18px; height: 18px; border-radius: var(--radius-sm); display: inline-block; }
-.row-dot { background: #FFF3CD; border: 1.5px solid #d4a000; }
-.col-dot { background: #D0EAFF; border: 1.5px solid #2277cc; }
-.box-dot { background: #EDEDF0; border: 1.5px solid #888888; }
+.row-dot { background: #ffffff; border: 1.5px solid #cccccc; }
+.col-dot { background: #ffffff; border: 1.5px solid #cccccc; }
+.box-dot { background: #ffffff; border: 1.5px solid #888888; }
 
 /* RULE CARDS */
 .rule-cards { display: flex; flex-direction: column; gap: var(--space-4); }
@@ -724,9 +724,9 @@ h1,h2,h3,h4 {
 .elim-cell.empty:hover { background: var(--color-primary-light); color: var(--color-primary); }
 .elim-cell.clickable { background: var(--color-warning-bg); border: 2px solid var(--color-warning); }
 .elim-cell.selected { background: var(--color-primary-light); border: 2px solid var(--color-primary); color: var(--color-primary); }
-.elim-cell.highlight-r { background: #fef9c3; }
-.elim-cell.highlight-c { background: #dbeafe; }
-.elim-cell.highlight-b { background: #fce7f3; }
+.elim-cell.highlight-r { background: #ffffff; }
+.elim-cell.highlight-c { background: #ffffff; }
+.elim-cell.highlight-b { background: #ffffff; }
 
 .elim-info {
   background: var(--color-surface-2);
