@@ -609,8 +609,8 @@ h1,h2,h3,h4 {
   transition: all var(--transition);
   color: var(--color-text-muted);
 }
-.ex-cell.highlight-row { background: #e0e7ff; }
-.ex-cell.highlight-col { background: #dbeafe; }
+.ex-cell.highlight-row { background: #FFF3CD; }
+.ex-cell.highlight-col { background: #D0EAFF; }
 .ex-cell.highlight-box { background: #fce7f3; }
 .ex-cell.highlight-row.highlight-col,
 .ex-cell.highlight-row.highlight-box,
@@ -619,9 +619,9 @@ h1,h2,h3,h4 {
 .explain-legend { display: flex; flex-direction: column; gap: var(--space-3); }
 .legend-item { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
 .legend-dot { width: 18px; height: 18px; border-radius: var(--radius-sm); display: inline-block; }
-.row-dot { background: #e0e7ff; border: 1.5px solid #6366f1; }
-.col-dot { background: #dbeafe; border: 1.5px solid #3b82f6; }
-.box-dot { background: #fce7f3; border: 1.5px solid #ec4899; }
+.row-dot { background: #FFF3CD; border: 1.5px solid #d4a000; }
+.col-dot { background: #D0EAFF; border: 1.5px solid #2277cc; }
+.box-dot { background: #EDEDF0; border: 1.5px solid #888888; }
 
 /* RULE CARDS */
 .rule-cards { display: flex; flex-direction: column; gap: var(--space-4); }
@@ -954,6 +954,9 @@ h1,h2,h3,h4 {
 .sudoku-cell.highlighted {
   background: var(--cell-highlighted);
 }
+.sudoku-cell.hl-row { background: var(--cell-hl-row); }
+.sudoku-cell.hl-col { background: var(--cell-hl-col); }
+.sudoku-cell.hl-box { background: var(--cell-hl-box); }
 .sudoku-cell.same-num {
   background: var(--cell-same-num);
 }
