@@ -1,7 +1,7 @@
 'use strict';
 
 // v3 — cache-busting: unregister old SW and wipe all caches
-const CACHE_VERSION = 'sudoku-v3';
+const CACHE_VERSION = 'sudoku-v4';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
