@@ -1,11 +1,11 @@
 'use strict';
 
-const CACHE_VERSION = 'sudoku-v2';
+const CACHE_VERSION = 'sudoku-v3';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './style.css',
+    './style.css?v=2',
   './script.js',
   './manifest.json',
   './icon-192.svg',
