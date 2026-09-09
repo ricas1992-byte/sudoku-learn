@@ -1,0 +1,55 @@
+name: security
+
+# Security loop for the static PWA (no build step, no npm dependencies).
+# Gates: secret scan (gitleaks), Content-Security-Policy presence guard,
+# and best-effort static analysis (CodeQL) over the client JavaScript.
+# Converging design: blocking gates are green when the repo is clean.
+
+on:
+  push:
+    branches: [master, main, 'claude/**']
+  pull_request:
+    branches: [master, main]
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks over full history
+        run: |
+          VER=8.18.4
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${VER}/gitleaks_${VER}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks detect --source . --redact --no-banner --exit-code 1
+
+  csp-guard:
+    name: CSP presence guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Ensure a Content-Security-Policy meta tag is present
+        run: |
+          if ! grep -qi 'http-equiv="Content-Security-Policy"' index.html; then
+            echo "::error file=index.html::Content-Security-Policy meta tag is missing from index.html"
+            exit 1
+          fi
+          echo "CSP meta tag present."
+
+# Note: CodeQL is intentionally not included here. A custom CodeQL workflow
+# needs code-scanning upload (GitHub Advanced Security), which is unavailable
+# on this repo — the scan runs but the SARIF upload fails ("Resource not
+# accessible by integration"), leaving a red check and blocking convergence.
+# To enable CodeQL, use GitHub's "default setup" (Settings → Code security →
+# Code scanning), which handles the permissions automatically.
