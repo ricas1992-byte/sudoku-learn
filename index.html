@@ -2,6 +2,11 @@
 <html lang="he" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8" />
+  <!-- Security: Content-Security-Policy (מוגש כ-meta כי האתר סטטי/ללא שרת headers).
+       script-src כולל 'unsafe-inline' כי המשחק משתמש ב-onclick inline ובבלוק סקריפט קטן;
+       אין backend/סודות/קלט לא-מהימן, ולכן זהו סיכון נמוך מקובל. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <!-- iOS / PWA meta -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
