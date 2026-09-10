@@ -381,19 +381,43 @@ function shuffle(arr) {
   return arr;
 }
 
+// Count solutions of a board, stopping as soon as `limit` is reached.
+// Used to keep generated puzzles uniquely solvable.
+function countSolutions(b, limit = 2) {
+  const empty = findEmpty(b);
+  if (!empty) return 1;
+  const [row, col] = empty;
+  let count = 0;
+  for (let n = 1; n <= 9; n++) {
+    if (isValid(b, row, col, n)) {
+      b[row][col] = n;
+      count += countSolutions(b, limit);
+      b[row][col] = 0;
+      if (count >= limit) break;
+    }
+  }
+  return count;
+}
+
 function removeNumbers(solved, difficulty) {
   const clues = { easy: 46, medium: 35, hard: 26 };
-  const keep = clues[difficulty] || 46;
-  const remove = 81 - keep;
+  const target = clues[difficulty] || 46;
   const puzzle = solved.map(r => [...r]);
   const positions = shuffle([...Array(81).keys()]);
-  let removed = 0;
+  let filled = 81;
   for (const pos of positions) {
-    if (removed >= remove) break;
+    if (filled <= target) break;
     const r = Math.floor(pos / 9), c = pos % 9;
-    if (puzzle[r][c] !== 0) {
-      puzzle[r][c] = 0;
-      removed++;
+    if (puzzle[r][c] === 0) continue;
+    const backup = puzzle[r][c];
+    puzzle[r][c] = 0;
+    // Keep the removal only if exactly one solution remains — otherwise the
+    // puzzle would be ambiguous and a valid alternative fill would be marked
+    // wrong (and never let the player win).
+    if (countSolutions(puzzle.map(row => [...row])) === 1) {
+      filled--;
+    } else {
+      puzzle[r][c] = backup;
     }
   }
   return puzzle;
@@ -433,10 +457,24 @@ function saveGameState() {
   } catch (_) {}
 }
 
+function isGrid(g) {
+  return Array.isArray(g) && g.length === 9 &&
+    g.every(row => Array.isArray(row) && row.length === 9 && row.every(v => typeof v === 'number'));
+}
+
 function loadGameState() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    // reject anything that isn't a well-formed save (old format / corruption) —
+    // otherwise renderBoard() would crash on a null/short board.
+    if (!s || !isGrid(s.board) || !isGrid(s.solution) ||
+        !(Array.isArray(s.given) && s.given.length === 9)) {
+      clearGameState();
+      return null;
+    }
+    return s;
   } catch (_) {
     return null;
   }
@@ -598,7 +636,7 @@ function applyHighlights() {
 function enterNumber(num) {
   if (!selectedCell || gameWon || isPaused) return;
   const { row, col } = selectedCell;
-  if (given[row][col]) { showMessage('תא זה ניתן ואינו ניתן לעריכה', 'error'); hapticError(); return; }
+  if (given[row][col]) { showMessage('תא זה נתון ואינו ניתן לעריכה', 'error'); hapticError(); return; }
 
   if (num === 0) {
     board[row][col] = 0;
@@ -780,6 +818,10 @@ function solveBoard() {
     }
   }
   stopTimer();
+  // "פתור" הוא ויתור: נועלים את הלוח (אין ניצחון), מנקים את השמירה כדי שרענון
+  // לא ישחזר לוח פתור, ולא שומרים אותו אוטומטית.
+  gameWon = true;
+  clearGameState();
   showMessage('הלוח נפתר! לחצו "תשבץ חדש" כדי להתחיל מחדש.', 'info');
   applyHighlights();
 }
@@ -802,8 +844,10 @@ function winGame() {
   document.getElementById('win-errors').textContent = errorCount;
   document.getElementById('win-text').textContent =
     errorCount === 0
-      ? 'פתרתם ללא שגיאות אחת! מדהים!'
-      : `פתרתם עם ${errorCount} שגיאות. כל הכבוד!`;
+      ? 'פתרתם בלי אף שגיאה! מדהים!'
+      : errorCount === 1
+        ? 'פתרתם עם שגיאה אחת. כל הכבוד!'
+        : `פתרתם עם ${errorCount} שגיאות. כל הכבוד!`;
   document.getElementById('win-modal').removeAttribute('hidden');
 }
 
@@ -813,6 +857,7 @@ function closeModal(id) {
 
 // ===== TIMER =====
 function startTimer() {
+  clearInterval(timerInterval); // never stack two tickers
   timerInterval = setInterval(() => {
     timerSeconds++;
     document.getElementById('timer-display').textContent = formatTime(timerSeconds);
