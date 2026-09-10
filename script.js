@@ -457,10 +457,24 @@ function saveGameState() {
   } catch (_) {}
 }
 
+function isGrid(g) {
+  return Array.isArray(g) && g.length === 9 &&
+    g.every(row => Array.isArray(row) && row.length === 9 && row.every(v => typeof v === 'number'));
+}
+
 function loadGameState() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    // reject anything that isn't a well-formed save (old format / corruption) —
+    // otherwise renderBoard() would crash on a null/short board.
+    if (!s || !isGrid(s.board) || !isGrid(s.solution) ||
+        !(Array.isArray(s.given) && s.given.length === 9)) {
+      clearGameState();
+      return null;
+    }
+    return s;
   } catch (_) {
     return null;
   }
@@ -843,6 +857,7 @@ function closeModal(id) {
 
 // ===== TIMER =====
 function startTimer() {
+  clearInterval(timerInterval); // never stack two tickers
   timerInterval = setInterval(() => {
     timerSeconds++;
     document.getElementById('timer-display').textContent = formatTime(timerSeconds);
